@@ -76,6 +76,7 @@ public class txtMatrixFileIo {
         int idxStart = 0, idxEnd = 0;
         String item;
 
+        List statistics = new ArrayList();
         while (idx < sCurrentLine.length()) {
             idxStart = idx;
             idxEnd = sCurrentLine.indexOf("\t", idx);
@@ -84,27 +85,34 @@ public class txtMatrixFileIo {
                 headers.add(item);
                 ArrayList<String> column = new ArrayList<String>();
                 all.add(column); 
+                HashMap columnStaMap = new HashMap();
+                statistics.add(columnStaMap);
             }
             idx = idxEnd + 1;
         }
         System.out.println(sCurrentLine);
         
-        int[] nonEmptyColumn = new int[headers.size()];  //store the non empty row number for each column.
+        int[] nonEmptyColumn = new int[headers.size()+1];  //store the non empty row number for each column.
         for (int i=0;i<headers.size();i++){
             nonEmptyColumn[i] = 0;
         }
         
+
+        
+        int total = 0;
         while ((sCurrentLine = br.readLine()) != null) {
             idx = 0;
             idxStart = 0;
             idxEnd = 0;
             int i = 0;
+            total++;
             while (idx < sCurrentLine.length() && i < all.size()) {
                 idxStart = idx;
                 idxEnd = sCurrentLine.indexOf("\t", idx);
                 item = sCurrentLine.substring(idxStart, idxEnd);
                 if (!(skipFirstColumn && idx == 0)) {
                     ArrayList<String> column = (ArrayList<String>) all.get(i);
+                    HashMap columnStaMap = (HashMap) statistics.get(i);
                     if (!(item == null || item.equals(""))) {
                         nonEmptyColumn[i]++;
                         if (item.indexOf("|") > 0) {
@@ -115,14 +123,29 @@ public class txtMatrixFileIo {
                                 String curItem = itemleft.substring(0, end);
                                 if (!column.contains(curItem)) {
                                     column.add(curItem);
+                                    columnStaMap.put(curItem, 1);
+                                }else{
+                                	int frequency = (Integer) columnStaMap.get(curItem);
+                                	columnStaMap.remove(curItem);
+                                	columnStaMap.put(curItem,frequency+1);
                                 }
                                 itemleft = itemleft.substring(end + 1);
                             }
                             if (!column.contains(itemleft)) {
                                 column.add(itemleft);
+                                columnStaMap.put(itemleft, 1);
+                            }else{
+                            	int frequency = (Integer) columnStaMap.get(itemleft);
+                            	columnStaMap.remove(itemleft);
+                            	columnStaMap.put(itemleft,frequency+1);
                             }
                         } else if (!column.contains(item)) {
                             column.add(item);
+                            columnStaMap.put(item, 1);
+                        }else{
+                        	int frequency = (Integer) columnStaMap.get(item);
+                        	columnStaMap.remove(item);
+                        	columnStaMap.put(item,frequency+1);
                         }
                     }
                     i++;
@@ -132,7 +155,9 @@ public class txtMatrixFileIo {
             //      System.out.println(sCurrentLine);
         }
         br.close();
+        nonEmptyColumn[headers.size()]=total;
         all.add(nonEmptyColumn);
+        all.add(statistics);
         return all;
     }
 
@@ -167,7 +192,7 @@ public class txtMatrixFileIo {
             if (!(featureMap == null || featureMap.isEmpty())) {
                 bw.write(item + "\t");
             } else if (saveAll) {
-                bw.write(item + "\t");//输出字符串  
+                bw.write(item + "\t");//输出字符
             }
             bw.flush();
             idx = idxEnd + 1;
@@ -196,23 +221,36 @@ public class txtMatrixFileIo {
                     } else {
                         if (!(item == null || item.equals(""))) {
                             String value = "";
+                            ArrayList curValues = new ArrayList();
                             if (item.indexOf("|") > 0) {
                                 int end = 0;
                                 String itemleft = item;
                                 while (itemleft.indexOf("|") > 0) {
                                     end = itemleft.indexOf("|");
                                     String curItem = itemleft.substring(0, end);
-                                    if (value.length() == 0) {
-                                        value = (String) featureMap.get(curItem);
-                                    } else {
-                                        value = value + "," + (String) featureMap.get(curItem);
-                                    }
+                             //       if (value.length() == 0) {
+                                        value = String.valueOf(featureMap.get(curItem));
+                                        if (!curValues.contains(value))
+                                        	curValues.add(value);
+                                /*    } else {
+                                        value = value + "," + String.valueOf(featureMap.get(curItem));
+                                    }*/
                                     itemleft = itemleft.substring(end + 1);
                                 }
-                                value = value + "," + (String) featureMap.get(itemleft);
+                         //       value = value + "," + String.valueOf(featureMap.get(itemleft));
+                                value = String.valueOf(featureMap.get(itemleft));
+                                if (!curValues.contains(value))
+                                	curValues.add(value);
                             } else {
-                                value = (String) featureMap.get(item);
+                                value = String.valueOf(featureMap.get(item));
+                                if (!curValues.contains(value))
+                                	curValues.add(value);
                             }
+                            value="";
+                            for (int l = 0;l<curValues.size();l++){
+                            	value+=curValues.get(l)+ "," ;
+                            }
+                            value = value.substring(0,value.length()-1);
                             bw.write(value + "\t");
                         } else {
                             bw.write("" + "\t");
@@ -231,6 +269,8 @@ public class txtMatrixFileIo {
         bw.close();
         br.close();
     }
+    
+
 
     public void saveNex(String filename, String outfilename, HashMap mappingRuleMap, boolean saveAll) throws IOException {
         BufferedWriter bw;
@@ -270,12 +310,23 @@ public class txtMatrixFileIo {
         bw.newLine();
         bw.write("END;");
         bw.newLine();
+        
+        bw.newLine();
+        bw.newLine();
+        bw.write("[");
+        bw.newLine();
+        saveCharacterPart(bw, mappingRuleMap, headers, saveAll);
+        bw.newLine();
+        bw.write("]");
+        
         bw.flush();
         bw.close();
         
+        
+        
         //output character file
-        String outCharacterFile = outfilename.substring(0, outfilename.lastIndexOf(".")) + "Character" + ".txt";
-        saveCharacterFile(outCharacterFile, mappingRuleMap, headers, saveAll);
+    //    String outCharacterFile = outfilename.substring(0, outfilename.lastIndexOf(".")) + "Character" + ".txt";
+    //    saveCharacterFile(outCharacterFile, mappingRuleMap, headers, saveAll);
 
     }
 
@@ -352,36 +403,52 @@ public class txtMatrixFileIo {
                         columnNum++;
                         if (!(item == null || item.equals(""))) {
                             String value = "";
+                            ArrayList curValues = new ArrayList();
                             if (item.indexOf("|") > 0) {
                                 int end = 0;
                                 String itemleft = item;
                                 while (itemleft.indexOf("|") > 0) {
                                     end = itemleft.indexOf("|");
                                     String curItem = itemleft.substring(0, end);
-                                    if (value.length() == 0) {
+                             //       if (value.length() == 0) {
                                         value = (String) String.valueOf(featureMap.get(curItem));
                                         if (!values.contains(value)) {
                                             values.add(value);
                                         }
-                                    } else {
+                                        if (!curValues.contains(value))
+                                        	curValues.add(value);
+                            /*        } else {
                                         if (!values.contains(String.valueOf(featureMap.get(curItem)))) {
                                             values.add((String) String.valueOf(featureMap.get(curItem)));
                                         }
                                         value = value + (String) String.valueOf(featureMap.get(curItem));
-                                    }
+                                        if (!curValues.contains(value))
+                                        	curValues.add(value);
+                                    }*/
                                     itemleft = itemleft.substring(end + 1);
                                 }
-                                if (!values.contains(featureMap.get(itemleft))) {
-                                    values.add((String) String.valueOf(featureMap.get(itemleft)));
+                                value = String.valueOf(featureMap.get(itemleft));
+                                if (!values.contains(value)) {
+                                    values.add(value);
                                 }
-                                value = "{" + value + (String) String.valueOf(featureMap.get(itemleft)) + "}";
+                                if (!curValues.contains(value))
+                                	curValues.add(value);
+                             //   value = "{" + value + (String) String.valueOf(featureMap.get(itemleft)) + "}";
 
                             } else {
                                 value = (String) String.valueOf(featureMap.get(item));
                                 if (!values.contains(value)) {
                                     values.add(value);
                                 }
+                                if (!curValues.contains(value))
+                                	curValues.add(value);
                             }
+                            value="";
+                            for (int l = 0;l<curValues.size();l++){
+                            	value+=curValues.get(l);
+                            }
+                            if (curValues.size()>1)
+                            	value = "{" + value + "}";
                             curRow = curRow + value;
 
                         } else {
@@ -455,5 +522,54 @@ public class txtMatrixFileIo {
         }
         bw.flush();
         bw.close();
+    }
+    
+    private void saveCharacterPart(BufferedWriter bw, HashMap mappingRuleMap, ArrayList<String> headers, boolean saveAll) throws IOException {
+        bw.write("CHARSTATELABELS");
+        bw.newLine();
+        bw.flush();
+        int columnNum = 0;
+        for (int i = 1; i < headers.size(); i++) {
+            SortedMap featureMap = (SortedMap) mappingRuleMap.get(headers.get(i));
+            if (saveAll && (featureMap == null || featureMap.isEmpty())) {
+                bw.write("\t\t");
+                bw.write(String.valueOf(i));
+                bw.write(" \'");
+                bw.write(headers.get(i));
+                bw.write(" \'");
+                bw.write(" / ");
+                if (!(featureMap == null || featureMap.isEmpty())) {
+                    Iterator it = featureMap.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pairs = (Map.Entry) it.next();
+                        bw.write(" \'");
+                        bw.write((String) pairs.getKey());
+                        bw.write("\' ");
+                   //     bw.write(",");
+                    }
+                }
+                bw.newLine();
+                bw.flush();
+            } else if (!saveAll && (!(featureMap == null || featureMap.isEmpty()))) {
+                columnNum++;
+                bw.write("\t\t");
+                bw.write(String.valueOf(columnNum));
+                bw.write(" \'");
+                bw.write(headers.get(i));
+                bw.write(" \'");
+                bw.write(" / ");
+                Iterator it = featureMap.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pairs = (Map.Entry) it.next();
+                    bw.write(" \'");
+                    bw.write((String) pairs.getKey());
+                    bw.write("\' ");
+               //     bw.write(",");
+                }
+                bw.newLine();
+                bw.flush();
+            }
+        }
+        bw.flush();
     }
 }
