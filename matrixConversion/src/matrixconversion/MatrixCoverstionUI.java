@@ -25,6 +25,9 @@ import javax.swing.JFileChooser;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+
 import matrixconversion.IO.txtMatrixFileIo;
 import matrixconversion.util.StringPattern;
  class MyCustomFilter extends javax.swing.filechooser.FileFilter {
@@ -47,6 +50,7 @@ import matrixconversion.util.StringPattern;
 public class MatrixCoverstionUI extends javax.swing.JFrame {
     protected static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(MatrixCoverstionUI.class);
     List characterFeatureList = new ArrayList();
+    List columnStatistics;
     HashMap mappingRuleMap = new HashMap();
     ArrayList<String> headers;
     String filepath;
@@ -89,6 +93,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         featureMappingTable = new javax.swing.JTable();
+        featureMappingTable.setAutoCreateRowSorter(true);
         saveMappingRuleButton = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         saveMatrixButton = new javax.swing.JButton();
@@ -296,7 +301,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Feature", "Value"
+                "Character States", "Value"
             }
         ) {
             Class[] types = new Class [] {
@@ -450,19 +455,27 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 headers = (ArrayList) txtio.readHeader(filepath,true);
                 characterFeatureList = txtio.readAll(filepath,true);
                 
-                int[] nonEmptyColumn = (int[]) characterFeatureList.get(characterFeatureList.size()-1);
+                columnStatistics = (List) characterFeatureList.get(characterFeatureList.size()-1);
+                characterFeatureList.remove(characterFeatureList.size()-1);
                 
+                int[] nonEmptyColumn = (int[]) characterFeatureList.get(characterFeatureList.size()-1);
+                int totalTaxa = nonEmptyColumn[nonEmptyColumn.length-1];
                 for (int i = 0; i < headers.size(); i++) {
                     String character = headers.get(i);
                     ArrayList featurelist = (ArrayList) characterFeatureList.get(i);
                     int featureNum = featurelist.size();
                     int taxaNum = nonEmptyColumn[i];
-                    character = character + " (Feature: "+String.valueOf(featureNum)+", Taxa:"+String.valueOf(taxaNum)+")";
+                    double percentage = taxaNum;
+                    percentage = percentage/totalTaxa;
+                    percentage = Math.round(percentage * 1000.0) / 1000.0;
+                    character = character + " (Character States: "+String.valueOf(featureNum)+", Taxa:"+String.valueOf(taxaNum)+" ["+percentage+"%])";
                     if (character != null && !character.equals("")) {
                         characterComboBox.addItem(character);
                     }
                 }
                 characterFeatureList.remove(characterFeatureList.size()-1);
+                
+
                 
                 
                 characterComboBox.setEnabled(true);
@@ -506,11 +519,13 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 
         if (characterFeatureList.size() > 0) {
             ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
+            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
             if (featureMap != null) {
                 for (int i = 0; i < featurelist.size(); i++) {
                     Vector newRow = new Vector();
                     String feature = (String) featurelist.get(i);
-                    newRow.add(feature);
+                    int taxNum = (Integer) featureStatMap.get(feature);
+                    newRow.add(feature+"("+taxNum+")");
                     newRow.add(featureMap.get(feature));
                     defaultModel.addRow(newRow);
                 }
@@ -519,7 +534,15 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                     for (int i = 0; i < featurelist.size(); i++) {
                         Vector newRow = new Vector();
                         String feature = (String) featurelist.get(i);
-                        newRow.add(feature);
+                  //      newRow.add(feature);
+                        int taxNum = (Integer) featureStatMap.get(feature);
+                        newRow.add(feature+" ("+taxNum+")");
+                        
+                        if (StringPattern.isDouble(feature)){
+                        	double value = Double.valueOf(feature);
+                        	value = Math.round(value * 1000.0) / 1000.0;
+                        	feature = String.valueOf(value);
+                        }
                         newRow.add(feature);
                         defaultModel.addRow(newRow);
                     }
@@ -527,7 +550,11 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 if (numberRadio.isSelected()) {
                     for (int i = 0; i < featurelist.size(); i++) {
                         Vector newRow = new Vector();
-                        newRow.add(featurelist.get(i));
+                        String feature = (String) featurelist.get(i);
+                        //      newRow.add(feature);
+                        int taxNum = (Integer) featureStatMap.get(feature);
+                        newRow.add(feature+" ("+taxNum+")");    
+                        
                         newRow.add(String.valueOf(i));
                         defaultModel.addRow(newRow);
                     }
@@ -552,19 +579,32 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 
         if (characterFeatureList.size() > 0) {
             ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
+            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
             if (featureMap != null) {
                 for (int i = 0; i < featurelist.size(); i++) {
                     Vector newRow = new Vector();
                     String feature = (String) featurelist.get(i);
-                    newRow.add(feature);
+//                  newRow.add(feature);
+                    int taxNum = (Integer) featureStatMap.get(feature);
+                    newRow.add(feature+" ("+taxNum+")");    
                     newRow.add(featureMap.get(feature));
                     defaultModel.addRow(newRow);
                 }
             } else {
                 for (int i = 0; i < featurelist.size(); i++) {
                     Vector newRow = new Vector();
-                    newRow.add(featurelist.get(i));
-                    newRow.add(featurelist.get(i));
+                    String feature = (String) featurelist.get(i);
+                    //      newRow.add(feature);
+                    int taxNum = (Integer) featureStatMap.get(feature);
+                    newRow.add(feature+" ("+taxNum+")");   
+                    
+                    if (StringPattern.isDouble(feature)){
+                    	double value = Double.valueOf(feature);
+                    	value = Math.round(value*1000)/1000;
+                    	feature = String.valueOf(value);
+                    }
+                    	
+                    newRow.add(feature);
                     defaultModel.addRow(newRow);
                 }
             }
@@ -585,18 +625,26 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 
         if (characterFeatureList.size() > 0) {
             ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
+            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
             if (featureMap != null) {
                 for (int i = 0; i < featurelist.size(); i++) {
                     Vector newRow = new Vector();
                     String feature = (String) featurelist.get(i);
-                    newRow.add(feature);
+                    //      newRow.add(feature);
+                    int taxNum = (Integer) featureStatMap.get(feature);
+                    newRow.add(feature+" ("+taxNum+")");   
+                    
                     newRow.add(featureMap.get(feature));
                     defaultModel.addRow(newRow);
                 }
             } else {
                 for (int i = 0; i < featurelist.size(); i++) {
                     Vector newRow = new Vector();
-                    newRow.add(featurelist.get(i));
+                    String feature = (String) featurelist.get(i);
+                    //      newRow.add(feature);
+                    int taxNum = (Integer) featureStatMap.get(feature);
+                    newRow.add(feature+" ("+taxNum+")");   
+                    
                     newRow.add(String.valueOf(i));
                     defaultModel.addRow(newRow);
                 }
@@ -677,6 +725,10 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 defaultModel.addRow(newRow);
             }
         }
+        TableRowSorter<TableModel > sorter1 = new TableRowSorter<TableModel >(defaultModel);
+        featureMappingTable.setRowSorter(sorter1);
+        
+
     }//GEN-LAST:event_applyBinRuleButtonActionPerformed
 
     private void saveMappingRuleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMappingRuleButtonActionPerformed
@@ -693,6 +745,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) featureMappingTable.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
             String feature = (String) model.getValueAt(i, 0);
+            feature = feature.substring(0, feature.indexOf("(")-1);
             if (StringPattern.isENum(feature)){
                BigDecimal db = new BigDecimal(feature);
                feature = db.toPlainString();
