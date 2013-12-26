@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.SortedMap;
+
 import matrixconversion.util.StringPattern;
 
 /**
@@ -358,7 +359,7 @@ public class txtMatrixFileIo {
         saveCharacterFile(outCharacterFile, mappingRuleMap, headers, saveAll);
     }
 
-    private int readContents(String filename, HashMap mappingRuleMap, boolean saveAll, ArrayList<String> headers, ArrayList<String> firstColumn, ArrayList<String> contents, ArrayList<String> values) throws FileNotFoundException, IOException {
+    protected int readContents(String filename, HashMap mappingRuleMap, boolean saveAll, ArrayList<String> headers, ArrayList<String> firstColumn, ArrayList<String> contents, ArrayList<String> values) throws FileNotFoundException, IOException {
 
         BufferedReader br = new BufferedReader(new FileReader(filename));
         //read the header of table
@@ -471,6 +472,10 @@ public class txtMatrixFileIo {
         else
             return columnNum;
     }
+    
+    
+    
+    
 
     private void saveCharacterFile(String outCharacterFile, HashMap mappingRuleMap, ArrayList<String> headers, boolean saveAll) throws IOException {
         BufferedWriter bw;
@@ -571,5 +576,6 @@ public class txtMatrixFileIo {
             }
         }
         bw.flush();
-    }
+    }       
+    
 }
