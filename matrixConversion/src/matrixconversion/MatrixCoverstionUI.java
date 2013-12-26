@@ -28,6 +28,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.jdom2.JDOMException;
+
+import matrixconversion.IO.NeXMLIO;
 import matrixconversion.IO.txtMatrixFileIo;
 import matrixconversion.util.StringPattern;
  class MyCustomFilter extends javax.swing.filechooser.FileFilter {
@@ -100,6 +103,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         nexFormatButton = new javax.swing.JRadioButton();
         phyFormatButton = new javax.swing.JRadioButton();
         txtFormatButton = new javax.swing.JRadioButton();
+        nexmlFormatButton = new javax.swing.JRadioButton();
 
         fileChooser.setFileFilter( new MyCustomFilter());
         fileChooser.setFileHidingEnabled(false);
@@ -380,6 +384,10 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         outputFormatChoiceButtonGroup.add(phyFormatButton);
         phyFormatButton.setText("phy");
         phyFormatButton.setEnabled(false);
+        
+        outputFormatChoiceButtonGroup.add(nexmlFormatButton);
+        nexmlFormatButton.setText("NeXML");
+        nexmlFormatButton.setEnabled(false);
 
         outputFormatChoiceButtonGroup.add(txtFormatButton);
         txtFormatButton.setSelected(true);
@@ -397,6 +405,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 .addGap(51, 51, 51)
                 .addComponent(nexFormatButton)
                 .addGap(49, 49, 49)
+                .addComponent(nexmlFormatButton)
+                .addGap(49, 49, 49)
                 .addComponent(phyFormatButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(saveMatrixButton)
@@ -408,6 +418,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 .addComponent(saveMatrixButton)
                 .addComponent(nexFormatButton)
                 .addComponent(phyFormatButton)
+                .addComponent(nexmlFormatButton)
                 .addComponent(txtFormatButton))
         );
 
@@ -758,6 +769,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         txtFormatButton.setEnabled(true);
         nexFormatButton.setEnabled(true);
         phyFormatButton.setEnabled(true);
+        nexmlFormatButton.setEnabled(true);
 
     }//GEN-LAST:event_saveMappingRuleButtonActionPerformed
 
@@ -778,12 +790,16 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                     txtio.saveNex(filepath, outfilepath, mappingRuleMap,false);
                 else if(phyFormatButton.isSelected())
                     txtio.savePhy(filepath, outfilepath, mappingRuleMap,false);
-            } catch (IOException ex) {
+                else if(nexmlFormatButton.isSelected()){
+                	NeXMLIO nexmlio = new NeXMLIO();
+                	nexmlio.saveNeXML(filepath, outfilepath, mappingRuleMap,false);
+                }
+            } catch (Exception ex) {
              //   Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE, null, ex);
                 ex.printStackTrace();
                 StringWriter sw = new StringWriter();PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
                 LOGGER.error(sw.toString());
-            }
+            } 
         }
     }//GEN-LAST:event_saveMatrixButtonActionPerformed
 
@@ -872,5 +888,6 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     private javax.swing.JButton saveMappingRuleButton;
     private javax.swing.JButton saveMatrixButton;
     private javax.swing.JRadioButton txtFormatButton;
+    private javax.swing.JRadioButton nexmlFormatButton;
     // End of variables declaration//GEN-END:variables
 }
