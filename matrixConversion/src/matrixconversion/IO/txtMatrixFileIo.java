@@ -550,7 +550,10 @@ public class txtMatrixFileIo {
                         bw.write(" \'");
                         bw.write((String) pairs.getKey());
                         bw.write("\' ");
-                   //     bw.write(",");
+                        bw.write(" : \'");
+                        bw.write((String) pairs.getValue());
+                        bw.write("\' ");
+                        bw.write(",");
                     }
                 }
                 bw.newLine();
@@ -569,7 +572,10 @@ public class txtMatrixFileIo {
                     bw.write(" \'");
                     bw.write((String) pairs.getKey());
                     bw.write("\' ");
-               //     bw.write(",");
+                    bw.write(" : \'");
+                    bw.write((String) pairs.getValue());
+                    bw.write("\' ");
+                    bw.write(",");
                 }
                 bw.newLine();
                 bw.flush();
