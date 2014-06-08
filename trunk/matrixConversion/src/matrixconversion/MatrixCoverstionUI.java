@@ -477,7 +477,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                     int featureNum = featurelist.size();
                     int taxaNum = nonEmptyColumn[i];
                     double percentage = taxaNum;
-                    percentage = percentage/totalTaxa;
+                    percentage = percentage*100.0/totalTaxa;
                     percentage = Math.round(percentage * 1000.0) / 1000.0;
                     character = character + " (Character States: "+String.valueOf(featureNum)+", Taxa:"+String.valueOf(taxaNum)+" ["+percentage+"%])";
                     if (character != null && !character.equals("")) {
