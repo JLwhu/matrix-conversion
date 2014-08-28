@@ -240,6 +240,8 @@ public class NeXMLIO extends txtMatrixFileIo {
         while (idx < sCurrentLine.length()) {
             idxStart = idx;
             idxEnd = sCurrentLine.indexOf("\t", idx);
+			if (idxEnd < 0)
+				idxEnd = sCurrentLine.length();
             item = sCurrentLine.substring(idxStart, idxEnd);
             headers.add(item);
             idx = idxEnd + 1;
@@ -257,6 +259,8 @@ public class NeXMLIO extends txtMatrixFileIo {
             while (idx < sCurrentLine.length() && i < headers.size()) {
                 idxStart = idx;
                 idxEnd = sCurrentLine.indexOf("\t", idx);
+				if (idxEnd < 0)
+					idxEnd = sCurrentLine.length();
                 item = sCurrentLine.substring(idxStart, idxEnd);
                 if (StringPattern.isENum(item)){
                     BigDecimal db = new BigDecimal(item);
