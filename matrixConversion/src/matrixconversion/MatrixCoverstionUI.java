@@ -479,7 +479,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                     double percentage = taxaNum;
                     percentage = percentage*100.0/totalTaxa;
                     percentage = Math.round(percentage * 1000.0) / 1000.0;
-                    character = character + " (Character States: "+String.valueOf(featureNum)+", Taxa:"+String.valueOf(taxaNum)+" ["+percentage+"%])";
+                    character = character + "\t (Character States: "+String.valueOf(featureNum)+", Taxa:"+String.valueOf(taxaNum)+" ["+percentage+"%])";
                     if (character != null && !character.equals("")) {
                         characterComboBox.addItem(character);
                     }
@@ -746,7 +746,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         int index = characterComboBox.getSelectedIndex();
         String character = (String) characterComboBox.getSelectedItem();
-        character = character.substring(0, character.indexOf(" "));
+        character = character.substring(0, character.indexOf("\t"));
         ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
         SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
         if (featureMap == null) {
