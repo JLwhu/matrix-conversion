@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import matrixconversion.util.StringPattern;
 
@@ -293,7 +294,7 @@ public class txtMatrixFileIo {
 	}
 
 	public void saveNex(String filename, String outfilename,
-			HashMap mappingRuleMap, boolean saveAll) throws IOException {
+			HashMap mappingRuleMap, HashMap binMappingRuleMap, boolean saveAll) throws IOException {
 		BufferedWriter bw;
 		ArrayList<String> headers = new ArrayList<String>();
 		ArrayList<String> firstColumn = new ArrayList<String>();
@@ -338,7 +339,7 @@ public class txtMatrixFileIo {
 		bw.newLine();
 		bw.write("[");
 		bw.newLine();
-		saveCharacterPart(bw, mappingRuleMap, headers, saveAll);
+		saveCharacterPart(bw, mappingRuleMap,binMappingRuleMap, headers, saveAll);
 		bw.newLine();
 		bw.write("]");
 
@@ -571,13 +572,30 @@ public class txtMatrixFileIo {
 		bw.close();
 	}
 
-	private void saveCharacterPart(BufferedWriter bw, HashMap mappingRuleMap, ArrayList<String> headers, boolean saveAll) throws IOException {
+	private void saveCharacterPart(BufferedWriter bw, HashMap mappingRuleMap,HashMap binMappingRuleMap, ArrayList<String> headers, boolean saveAll) throws IOException {
         bw.write("CHARSTATELABELS");
         bw.newLine();
         bw.flush();
         int columnNum = 0;
         for (int i = 1; i < headers.size(); i++) {
             SortedMap featureMap = (SortedMap) mappingRuleMap.get(headers.get(i));
+            SortedMap featureBinMap = (SortedMap) binMappingRuleMap.get(headers.get(i));
+            SortedMap keyToStatesMap = new TreeMap();
+            if (!(featureMap == null || featureMap.isEmpty())) {
+            	Iterator itState = featureMap.entrySet().iterator();
+    			while (itState.hasNext()) {
+    				Map.Entry pairs = (Map.Entry) itState.next();
+    				String key = String.valueOf(pairs.getValue());
+    				String state = (String) pairs.getKey();
+    				if (keyToStatesMap.containsKey(key)){
+    					String states = (String) keyToStatesMap.get(key);
+    					keyToStatesMap.put(key, states+"_"+ state);
+    				}else{
+    					keyToStatesMap.put(key, state);
+    				}
+    			}
+            }
+            
             if (saveAll && (featureMap == null || featureMap.isEmpty())) {
                 bw.write("\t\t");
                 bw.write(String.valueOf(i));
@@ -586,16 +604,24 @@ public class txtMatrixFileIo {
                 bw.write(" \'");
                 bw.write(" / ");
                 if (!(featureMap == null || featureMap.isEmpty())) {
-                    Iterator it = featureMap.entrySet().iterator();
+                    Iterator it;
+    				if (featureBinMap == null) {
+    			//		it = featureMap.entrySet().iterator();
+    					it = keyToStatesMap.entrySet().iterator();
+    				} else {
+    					it = featureBinMap.entrySet().iterator();
+    				}
+//                    Iterator it = featureMap.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pairs = (Map.Entry) it.next();
                         bw.write(" \'");
-                        bw.write((String) pairs.getKey());
+        				//	bw.write((String) pairs.getKey());
+    					bw.write((String) pairs.getValue());
                         bw.write("\' ");
-                        bw.write(" : \'");
+         /*               bw.write(" : \'");
                         bw.write((String) pairs.getValue());
-                        bw.write("\' ");
-                        bw.write(",");
+                        bw.write("\' ");*/
+                        bw.write(",");  
                     }
                 }
                 bw.newLine();
@@ -608,22 +634,33 @@ public class txtMatrixFileIo {
                 bw.write(headers.get(i));
                 bw.write(" \'");
                 bw.write(" / ");
-                Iterator it = featureMap.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pairs = (Map.Entry) it.next();
-                    bw.write(" \'");
-                    bw.write((String) pairs.getKey());
-                    bw.write("\' ");
-                    bw.write(" : \'");
-                    bw.write((String) pairs.getValue());
-                    bw.write("\' ");
-                    bw.write(",");
-                }
+                
+                Iterator it;
+				if (featureBinMap == null) {
+	    			//		it = featureMap.entrySet().iterator();
+					it = keyToStatesMap.entrySet().iterator();		
+				} else {
+					it = featureBinMap.entrySet().iterator();
+				}
+				
+				while (it.hasNext()) {
+					Map.Entry pairs = (Map.Entry) it.next();
+					bw.write(" \'");
+				//	bw.write((String) pairs.getKey());
+					bw.write((String) pairs.getValue());
+					bw.write("\' ");
+					/*
+					 * bw.write(" : \'"); bw.write((String)
+					 * pairs.getValue()); bw.write("\' ");
+					 */
+					bw.write(",");
+				}
                 bw.newLine();
                 bw.flush();
             }
         }
         bw.flush();
     }
+
 
 }
