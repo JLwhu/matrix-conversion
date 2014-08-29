@@ -55,6 +55,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     List characterFeatureList = new ArrayList();
     List columnStatistics;
     HashMap mappingRuleMap = new HashMap();
+    HashMap binMappingRuleMap = new HashMap();    //save the bin mapping rule for all the characters
     ArrayList<String> headers;
     String filepath;
     String outfilepath;
@@ -683,6 +684,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     private void applyBinRuleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyBinRuleButtonActionPerformed
         // TODO add your handling code here:
         int index = characterComboBox.getSelectedIndex();
+        String character = (String) characterComboBox.getSelectedItem();
+        character = character.substring(0, character.indexOf("\t"));
         DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable.getModel();
 
         DefaultTableModel binmodel = (DefaultTableModel) binRuleTable.getModel();
@@ -700,7 +703,13 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 
         if (characterFeatureList.size() > 0) {
             ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
+            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
             ArrayList binRules = new ArrayList();
+            SortedMap featureBinRuleMap = (SortedMap) binMappingRuleMap.get(character);
+            if (featureBinRuleMap == null){
+            	featureBinRuleMap = new TreeMap();
+            	binMappingRuleMap.put(character, featureBinRuleMap);
+            }
             for (int i = 0; i < binmodel.getRowCount(); i++) {
                 Double fromvalue = (Double) binmodel.getValueAt(i, 0);
                 Double tovalue = (Double) binmodel.getValueAt(i, 1);
@@ -710,12 +719,16 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 rangeMap[1] = tovalue;
                 rangeMap[2] = Double.valueOf(mapvalue);
                 binRules.add(rangeMap);
+                featureBinRuleMap.put(mapvalue.toString(), fromvalue.toString()+"_"+tovalue.toString());
                 //        featureMap.put(feature, value);
             }
             for (int i = 0; i < featurelist.size(); i++) {
                 Vector newRow = new Vector();
                 String feature = (String) featurelist.get(i);
-                newRow.add(feature);
+        //        newRow.add(feature);
+                int taxNum = (Integer) featureStatMap.get(feature);
+                newRow.add(feature+" ("+taxNum+")");   
+                
                 boolean isDouble = StringPattern.isDouble(feature);
                 if (isDouble){
                     for (int j = 0; j < binRules.size(); j++) {
@@ -726,6 +739,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                         Double mapvalue = rangeMap[2];
                         if (featurevalue >= fromvalue && featurevalue <= tovalue) {
                             newRow.add(String.valueOf(mapvalue.intValue()));
+                            newRow.add(feature+" ("+taxNum+")");   
                             break;
                         }
                     }
@@ -749,10 +763,12 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         character = character.substring(0, character.indexOf("\t"));
         ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
         SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
+
         if (featureMap == null) {
             featureMap = new TreeMap();
             mappingRuleMap.put(character, featureMap);
         }
+
         DefaultTableModel model = (DefaultTableModel) featureMappingTable.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
             String feature = (String) model.getValueAt(i, 0);
@@ -787,7 +803,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 if (txtFormatButton.isSelected())
                     txtio.saveTxt(filepath, outfilepath, mappingRuleMap,false);
                 else if(nexFormatButton.isSelected())
-                    txtio.saveNex(filepath, outfilepath, mappingRuleMap,false);
+                    txtio.saveNex(filepath, outfilepath, mappingRuleMap,binMappingRuleMap,false);
                 else if(phyFormatButton.isSelected())
                     txtio.savePhy(filepath, outfilepath, mappingRuleMap,false);
                 else if(nexmlFormatButton.isSelected()){
