@@ -546,7 +546,6 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                     for (int i = 0; i < featurelist.size(); i++) {
                         Vector newRow = new Vector();
                         String feature = (String) featurelist.get(i);
-                  //      newRow.add(feature);
                         int taxNum = (Integer) featureStatMap.get(feature);
                         newRow.add(feature+" ("+taxNum+")");
                         
@@ -559,19 +558,16 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                         defaultModel.addRow(newRow);
                     }
                 }
-                if (numberRadio.isSelected()) {
+                if (numberRadio.isSelected()||binRadio.isSelected()) {
                     for (int i = 0; i < featurelist.size(); i++) {
                         Vector newRow = new Vector();
                         String feature = (String) featurelist.get(i);
-                        //      newRow.add(feature);
                         int taxNum = (Integer) featureStatMap.get(feature);
                         newRow.add(feature+" ("+taxNum+")");    
                         
                         newRow.add(String.valueOf(i));
                         defaultModel.addRow(newRow);
                     }
-                }
-                if (binRadio.isSelected()) {
                 }
             }
         }
@@ -858,21 +854,29 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
+        } catch (Exception ex) {
             java.util.logging.Logger.getLogger(MatrixCoverstionUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MatrixCoverstionUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MatrixCoverstionUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MatrixCoverstionUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+            ex.printStackTrace();
+            StringWriter sw = new StringWriter();PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
+            LOGGER.error(sw.toString());
+        } 
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MatrixCoverstionUI().setVisible(true);
+				try {
+					new MatrixCoverstionUI().setVisible(true);
+				} catch (Exception ex) {
+					java.util.logging.Logger.getLogger(
+							MatrixCoverstionUI.class.getName()).log(
+							java.util.logging.Level.SEVERE, null, ex);
+					ex.printStackTrace();
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					ex.printStackTrace(pw);
+					LOGGER.error(sw.toString());
+				}
             }
         });
     }
