@@ -64,7 +64,17 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
      * Creates new form MatrixCoverstionUI
      */
     public MatrixCoverstionUI() {
-        initComponents();
+		try {
+			initComponents();
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
     }
 
     /**
@@ -310,7 +320,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class
+                java.lang.Object.class,   java.lang.Object.class//java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -495,13 +505,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 numberRadio.setEnabled(true);
                 binRadio.setEnabled(true);
                 saveMappingRuleButton.setEnabled(true);
-            } catch (FileNotFoundException ex) {
+            } catch (Exception ex) {
            //     Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE, null, ex);
-                ex.printStackTrace();
-                StringWriter sw = new StringWriter();PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
-                LOGGER.error(sw.toString());
-            } catch (IOException ex) {
-             //   Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE, null, ex);
                 ex.printStackTrace();
                 StringWriter sw = new StringWriter();PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
                 LOGGER.error(sw.toString());
@@ -520,319 +525,434 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     }//GEN-LAST:event_characterComboBoxActionPerformed
 
     private void characterComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_characterComboBoxItemStateChanged
-        int index = characterComboBox.getSelectedIndex();
-        String character = (String) characterComboBox.getSelectedItem();
-        SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
-        DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable.getModel();
+		try {
+			int index = characterComboBox.getSelectedIndex();
+			String character = (String) characterComboBox.getSelectedItem();
+			SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
+			DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable
+					.getModel();
 
-        for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
-            defaultModel.removeRow(i);
-        }
+			for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
+				defaultModel.removeRow(i);
+			}
 
-        if (characterFeatureList.size() > 0) {
-            ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
-            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
-            if (featureMap != null) {
-                for (int i = 0; i < featurelist.size(); i++) {
-                    Vector newRow = new Vector();
-                    String feature = (String) featurelist.get(i);
-                    int taxNum = (Integer) featureStatMap.get(feature);
-                    newRow.add(feature+"("+taxNum+")");
-                    newRow.add(featureMap.get(feature));
-                    defaultModel.addRow(newRow);
-                }
-            } else {
-                if (asisValueRadio.isSelected()) {
-                    for (int i = 0; i < featurelist.size(); i++) {
-                        Vector newRow = new Vector();
-                        String feature = (String) featurelist.get(i);
-                        int taxNum = (Integer) featureStatMap.get(feature);
-                        newRow.add(feature+" ("+taxNum+")");
-                        
-                        if (StringPattern.isDouble(feature)){
-                        	double value = Double.valueOf(feature);
-                        	value = Math.round(value * 1000.0) / 1000.0;
-                        	feature = String.valueOf(value);
-                        }
-                        newRow.add(feature);
-                        defaultModel.addRow(newRow);
-                    }
-                }
-                if (numberRadio.isSelected()||binRadio.isSelected()) {
-                    for (int i = 0; i < featurelist.size(); i++) {
-                        Vector newRow = new Vector();
-                        String feature = (String) featurelist.get(i);
-                        int taxNum = (Integer) featureStatMap.get(feature);
-                        newRow.add(feature+" ("+taxNum+")");    
-                        
-                        newRow.add(String.valueOf(i));
-                        defaultModel.addRow(newRow);
-                    }
-                }
-            }
-        }
+			if (characterFeatureList.size() > 0) {
+				ArrayList featurelist = (ArrayList) characterFeatureList
+						.get(index);
+				HashMap featureStatMap = (HashMap) columnStatistics.get(index);
+				if (featureMap != null) {
+					for (int i = 0; i < featurelist.size(); i++) {
+						Vector newRow = new Vector();
+						String feature = (String) featurelist.get(i);
+						int taxNum = (Integer) featureStatMap.get(feature);
+						newRow.add(feature + "(" + taxNum + ")");
+						newRow.add(featureMap.get(feature));
+						defaultModel.addRow(newRow);
+					}
+				} else {
+					if (asisValueRadio.isSelected()) {
+						for (int i = 0; i < featurelist.size(); i++) {
+							Vector newRow = new Vector();
+							String feature = (String) featurelist.get(i);
+							int taxNum = (Integer) featureStatMap.get(feature);
+							newRow.add(feature + " (" + taxNum + ")");
+
+							if (StringPattern.isDouble(feature)) {
+								double value = Double.valueOf(feature);
+								value = Math.round(value * 1000.0) / 1000.0;
+								feature = String.valueOf(value);
+							}
+							newRow.add(feature);
+							defaultModel.addRow(newRow);
+						}
+					}
+					if (numberRadio.isSelected() || binRadio.isSelected()) {
+						for (int i = 0; i < featurelist.size(); i++) {
+							Vector newRow = new Vector();
+							String feature = (String) featurelist.get(i);
+							int taxNum = (Integer) featureStatMap.get(feature);
+							newRow.add(feature + " (" + taxNum + ")");
+
+							newRow.add(String.valueOf(i));
+							defaultModel.addRow(newRow);
+						}
+					}
+				}
+
+			}
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
         
     }//GEN-LAST:event_characterComboBoxItemStateChanged
 
     private void asisValueRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asisValueRadioActionPerformed
-        // TODO add your handling code here:        
-        int index = characterComboBox.getSelectedIndex();
-        String character = (String) characterComboBox.getSelectedItem();
-        SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
-        DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable.getModel();
+		try {
+			int index = characterComboBox.getSelectedIndex();
+			String character = (String) characterComboBox.getSelectedItem();
+			SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
+			DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable
+					.getModel();
 
-        for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
-            defaultModel.removeRow(i);
-        }
+			for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
+				defaultModel.removeRow(i);
+			}
 
-        if (characterFeatureList.size() > 0) {
-            ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
-            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
-            if (featureMap != null) {
-                for (int i = 0; i < featurelist.size(); i++) {
-                    Vector newRow = new Vector();
-                    String feature = (String) featurelist.get(i);
-//                  newRow.add(feature);
-                    int taxNum = (Integer) featureStatMap.get(feature);
-                    newRow.add(feature+" ("+taxNum+")");    
-                    newRow.add(featureMap.get(feature));
-                    defaultModel.addRow(newRow);
-                }
-            } else {
-                for (int i = 0; i < featurelist.size(); i++) {
-                    Vector newRow = new Vector();
-                    String feature = (String) featurelist.get(i);
-                    //      newRow.add(feature);
-                    int taxNum = (Integer) featureStatMap.get(feature);
-                    newRow.add(feature+" ("+taxNum+")");   
-                    
-                    if (StringPattern.isDouble(feature)){
-                    	double value = Double.valueOf(feature);
-                    	value = Math.round(value*1000)/1000;
-                    	feature = String.valueOf(value);
-                    }
-                    	
-                    newRow.add(feature);
-                    defaultModel.addRow(newRow);
-                }
-            }
-        }
+			if (characterFeatureList.size() > 0) {
+				ArrayList featurelist = (ArrayList) characterFeatureList
+						.get(index);
+				HashMap featureStatMap = (HashMap) columnStatistics.get(index);
+				if (featureMap != null) {
+					for (int i = 0; i < featurelist.size(); i++) {
+						Vector newRow = new Vector();
+						String feature = (String) featurelist.get(i);
+						// newRow.add(feature);
+						int taxNum = (Integer) featureStatMap.get(feature);
+						newRow.add(feature + " (" + taxNum + ")");
+						newRow.add(featureMap.get(feature));
+						defaultModel.addRow(newRow);
+					}
+				} else {
+					for (int i = 0; i < featurelist.size(); i++) {
+						Vector newRow = new Vector();
+						String feature = (String) featurelist.get(i);
+						// newRow.add(feature);
+						int taxNum = (Integer) featureStatMap.get(feature);
+						newRow.add(feature + " (" + taxNum + ")");
+
+						if (StringPattern.isDouble(feature)) {
+							double value = Double.valueOf(feature);
+							value = Math.round(value * 1000) / 1000;
+							feature = String.valueOf(value);
+						}
+
+						newRow.add(feature);
+						defaultModel.addRow(newRow);
+					}
+				}
+			}
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
 
     }//GEN-LAST:event_asisValueRadioActionPerformed
 
-    private void numberRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberRadioActionPerformed
-        // TODO add your handling code here:
-        int index = characterComboBox.getSelectedIndex();
-        String character = (String) characterComboBox.getSelectedItem();
-        SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
-        DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable.getModel();
+	private void numberRadioActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_numberRadioActionPerformed
+		try {
+			int index = characterComboBox.getSelectedIndex();
+			String character = (String) characterComboBox.getSelectedItem();
+			SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
+			DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable
+					.getModel();
 
-        for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
-            defaultModel.removeRow(i);
-        }
+			for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
+				defaultModel.removeRow(i);
+			}
 
-        if (characterFeatureList.size() > 0) {
-            ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
-            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
-            if (featureMap != null) {
-                for (int i = 0; i < featurelist.size(); i++) {
-                    Vector newRow = new Vector();
-                    String feature = (String) featurelist.get(i);
-                    //      newRow.add(feature);
-                    int taxNum = (Integer) featureStatMap.get(feature);
-                    newRow.add(feature+" ("+taxNum+")");   
-                    
-                    newRow.add(featureMap.get(feature));
-                    defaultModel.addRow(newRow);
-                }
-            } else {
-                for (int i = 0; i < featurelist.size(); i++) {
-                    Vector newRow = new Vector();
-                    String feature = (String) featurelist.get(i);
-                    //      newRow.add(feature);
-                    int taxNum = (Integer) featureStatMap.get(feature);
-                    newRow.add(feature+" ("+taxNum+")");   
-                    
-                    newRow.add(String.valueOf(i));
-                    defaultModel.addRow(newRow);
-                }
-            }
-        }
-    }//GEN-LAST:event_numberRadioActionPerformed
+			if (characterFeatureList.size() > 0) {
+				ArrayList featurelist = (ArrayList) characterFeatureList
+						.get(index);
+				HashMap featureStatMap = (HashMap) columnStatistics.get(index);
+				if (featureMap != null) {
+					for (int i = 0; i < featurelist.size(); i++) {
+						Vector newRow = new Vector();
+						String feature = (String) featurelist.get(i);
+						// newRow.add(feature);
+						int taxNum = (Integer) featureStatMap.get(feature);
+						newRow.add(feature + " (" + taxNum + ")");
+
+						newRow.add(featureMap.get(feature));
+						defaultModel.addRow(newRow);
+					}
+				} else {
+					for (int i = 0; i < featurelist.size(); i++) {
+						Vector newRow = new Vector();
+						String feature = (String) featurelist.get(i);
+						// newRow.add(feature);
+						int taxNum = (Integer) featureStatMap.get(feature);
+						newRow.add(feature + " (" + taxNum + ")");
+
+						newRow.add(String.valueOf(i));
+						defaultModel.addRow(newRow);
+					}
+				}
+			}
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
+	}// GEN-LAST:event_numberRadioActionPerformed
 
     private void insertBinRuleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBinRuleButtonActionPerformed
-        // TODO add your handling code here:
-        DefaultTableModel defaultModel = (DefaultTableModel) binRuleTable.getModel();
-        Vector newRow = new Vector();
-        newRow.add(0.0);
-        newRow.add(1.0);
-        newRow.add(0);
-        defaultModel.addRow(newRow);
+		try {
+			// TODO add your handling code here:
+			DefaultTableModel defaultModel = (DefaultTableModel) binRuleTable
+					.getModel();
+			Vector newRow = new Vector();
+			newRow.add(0.0);
+			newRow.add(1.0);
+			newRow.add(0);
+			defaultModel.addRow(newRow);
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
     }//GEN-LAST:event_insertBinRuleButtonActionPerformed
 
-    private void deleteBinRuleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBinRuleButtonActionPerformed
-        // TODO add your handling code here:
-        DefaultTableModel defaultModel = (DefaultTableModel) binRuleTable.getModel();
-        int rowindex = binRuleTable.getSelectedRow();
-        defaultModel.removeRow(rowindex);
-    }//GEN-LAST:event_deleteBinRuleButtonActionPerformed
+	private void deleteBinRuleButtonActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_deleteBinRuleButtonActionPerformed
+		try {
+			// TODO add your handling code here:
+			DefaultTableModel defaultModel = (DefaultTableModel) binRuleTable
+					.getModel();
+			int rowindex = binRuleTable.getSelectedRow();
+			defaultModel.removeRow(rowindex);
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
+	}// GEN-LAST:event_deleteBinRuleButtonActionPerformed
 
-    private void applyBinRuleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyBinRuleButtonActionPerformed
-        // TODO add your handling code here:
-        int index = characterComboBox.getSelectedIndex();
-        String character = (String) characterComboBox.getSelectedItem();
-        character = character.substring(0, character.indexOf("\t"));
-        DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable.getModel();
+	private void applyBinRuleButtonActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_applyBinRuleButtonActionPerformed
+		// TODO add your handling code here:
+		try {
+			int index = characterComboBox.getSelectedIndex();
+			String character = (String) characterComboBox.getSelectedItem();
+			character = character.substring(0, character.indexOf("\t"));
+			DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable
+					.getModel();
 
-        DefaultTableModel binmodel = (DefaultTableModel) binRuleTable.getModel();
+			DefaultTableModel binmodel = (DefaultTableModel) binRuleTable
+					.getModel();
 
-        for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
-            defaultModel.removeRow(i);
-        }
+			for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
+				defaultModel.removeRow(i);
+			}
 
-        binRuleTable.setAutoCreateRowSorter(true);
-        DefaultRowSorter sorter = ((DefaultRowSorter) binRuleTable.getRowSorter());
-        ArrayList list = new ArrayList();
-        list.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-        sorter.setSortKeys(list);
-        sorter.sort();
+			binRuleTable.setAutoCreateRowSorter(true);
+			DefaultRowSorter sorter = ((DefaultRowSorter) binRuleTable
+					.getRowSorter());
+			ArrayList list = new ArrayList();
+			list.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+			sorter.setSortKeys(list);
+			sorter.sort();
 
-        if (characterFeatureList.size() > 0) {
-            ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
-            HashMap featureStatMap = (HashMap) columnStatistics.get(index);
-            ArrayList binRules = new ArrayList();
-            SortedMap featureBinRuleMap = (SortedMap) binMappingRuleMap.get(character);
-            if (featureBinRuleMap == null){
-            	featureBinRuleMap = new TreeMap();
-            	binMappingRuleMap.put(character, featureBinRuleMap);
-            }
-            for (int i = 0; i < binmodel.getRowCount(); i++) {
-                Double fromvalue = (Double) binmodel.getValueAt(i, 0);
-                Double tovalue = (Double) binmodel.getValueAt(i, 1);
-                Integer mapvalue = (Integer) binmodel.getValueAt(i, 2);
-                Double[] rangeMap = new Double[3];
-                rangeMap[0] = fromvalue;
-                rangeMap[1] = tovalue;
-                rangeMap[2] = Double.valueOf(mapvalue);
-                binRules.add(rangeMap);
-                featureBinRuleMap.put(mapvalue.toString(), fromvalue.toString()+"_"+tovalue.toString());
-                //        featureMap.put(feature, value);
-            }
-            for (int i = 0; i < featurelist.size(); i++) {
-                Vector newRow = new Vector();
-                String feature = (String) featurelist.get(i);
-        //        newRow.add(feature);
-                int taxNum = (Integer) featureStatMap.get(feature);
-                newRow.add(feature+" ("+taxNum+")");   
-                
-                boolean isDouble = StringPattern.isDouble(feature);
-                if (isDouble){
-                    for (int j = 0; j < binRules.size(); j++) {
-                        Double featurevalue = Double.valueOf(feature);
-                        Double[] rangeMap = (Double[]) binRules.get(j);
-                        Double fromvalue = rangeMap[0];
-                        Double tovalue = rangeMap[1];
-                        Double mapvalue = rangeMap[2];
-                        if (featurevalue >= fromvalue && featurevalue <= tovalue) {
-                            newRow.add(String.valueOf(mapvalue.intValue()));
-                            newRow.add(feature+" ("+taxNum+")");   
-                            break;
-                        }
-                    }
-                }else{
-                    newRow.add(0);
-                }
-                    
-                defaultModel.addRow(newRow);
-            }
-        }
-        TableRowSorter<TableModel > sorter1 = new TableRowSorter<TableModel >(defaultModel);
-        featureMappingTable.setRowSorter(sorter1);
-        
+			if (characterFeatureList.size() > 0) {
+				ArrayList featurelist = (ArrayList) characterFeatureList
+						.get(index);
+				HashMap featureStatMap = (HashMap) columnStatistics.get(index);
+				ArrayList binRules = new ArrayList();
+				SortedMap featureBinRuleMap = (SortedMap) binMappingRuleMap
+						.get(character);
+				if (featureBinRuleMap == null) {
+					featureBinRuleMap = new TreeMap();
+					binMappingRuleMap.put(character, featureBinRuleMap);
+				}
+				for (int i = 0; i < binmodel.getRowCount(); i++) {
+					Double fromvalue = (Double) binmodel.getValueAt(i, 0);
+					Double tovalue = (Double) binmodel.getValueAt(i, 1);
+					Integer mapvalue = (Integer) binmodel.getValueAt(i, 2);
+					Double[] rangeMap = new Double[3];
+					rangeMap[0] = fromvalue;
+					rangeMap[1] = tovalue;
+					rangeMap[2] = Double.valueOf(mapvalue);
+					binRules.add(rangeMap);
+					featureBinRuleMap.put(mapvalue.toString(),
+							fromvalue.toString() + "_" + tovalue.toString());
+					// featureMap.put(feature, value);
+				}
+				for (int i = 0; i < featurelist.size(); i++) {
+					Vector newRow = new Vector();
+					String feature = (String) featurelist.get(i);
+					// newRow.add(feature);
+					int taxNum = (Integer) featureStatMap.get(feature);
+					newRow.add(feature + " (" + taxNum + ")");
 
-    }//GEN-LAST:event_applyBinRuleButtonActionPerformed
+					boolean isDouble = StringPattern.isDouble(feature);
+					if (isDouble) {
+						for (int j = 0; j < binRules.size(); j++) {
+							Double featurevalue = Double.valueOf(feature);
+							Double[] rangeMap = (Double[]) binRules.get(j);
+							Double fromvalue = rangeMap[0];
+							Double tovalue = rangeMap[1];
+							Double mapvalue = rangeMap[2];
+							if (featurevalue >= fromvalue
+									&& featurevalue <= tovalue) {
+								newRow.add(String.valueOf(mapvalue.intValue()));
+								newRow.add(feature + " (" + taxNum + ")");
+								break;
+							}
+						}
+					} else {
+						newRow.add(0);
+					}
 
-    private void saveMappingRuleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMappingRuleButtonActionPerformed
-        // TODO add your handling code here:
-        int index = characterComboBox.getSelectedIndex();
-        String character = (String) characterComboBox.getSelectedItem();
-        character = character.substring(0, character.indexOf("\t"));
-        ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
-        SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
+					defaultModel.addRow(newRow);
+				}
+			}
+			TableRowSorter<TableModel> sorter1 = new TableRowSorter<TableModel>(
+					defaultModel);
+			featureMappingTable.setRowSorter(sorter1);
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
 
-        if (featureMap == null) {
-            featureMap = new TreeMap();
-            mappingRuleMap.put(character, featureMap);
-        }
+	}// GEN-LAST:event_applyBinRuleButtonActionPerformed
 
-        DefaultTableModel model = (DefaultTableModel) featureMappingTable.getModel();
-        for (int i = 0; i < model.getRowCount(); i++) {
-            String feature = (String) model.getValueAt(i, 0);
-            feature = feature.substring(0, feature.indexOf("(")-1);
-            if (StringPattern.isENum(feature)){
-               BigDecimal db = new BigDecimal(feature);
-               feature = db.toPlainString();
-            }
-            Object value = model.getValueAt(i, 1);
-            featureMap.put(feature, value);
-        }
-        
-        saveMatrixButton.setEnabled(true);
-        txtFormatButton.setEnabled(true);
-        nexFormatButton.setEnabled(true);
-        phyFormatButton.setEnabled(true);
-        nexmlFormatButton.setEnabled(true);
+	private void saveMappingRuleButtonActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveMappingRuleButtonActionPerformed
+		// TODO add your handling code here:
+		try {
+			int index = characterComboBox.getSelectedIndex();
+			String character = (String) characterComboBox.getSelectedItem();
+			character = character.substring(0, character.indexOf("\t"));
+			ArrayList featurelist = (ArrayList) characterFeatureList.get(index);
+			SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
 
-    }//GEN-LAST:event_saveMappingRuleButtonActionPerformed
+			if (featureMap == null) {
+				featureMap = new TreeMap();
+				mappingRuleMap.put(character, featureMap);
+			}
 
-    private void saveMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMatrixButtonActionPerformed
-        // TODO add your handling code here:
-        int returnVal = fileChooser.showSaveDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            txtMatrixFileIo txtio = new txtMatrixFileIo();
-            File file = fileChooser.getSelectedFile();
-            // What to do with the file, e.g. display it in a TextArea
-            outfilepath = file.getAbsolutePath();
-            try {
-                //    txtio.saveAll(filepath, outfilepath, mappingRuleMap);
-                
-                if (txtFormatButton.isSelected())
-                    txtio.saveTxt(filepath, outfilepath, mappingRuleMap,false);
-                else if(nexFormatButton.isSelected())
-                    txtio.saveNex(filepath, outfilepath, mappingRuleMap,binMappingRuleMap,false);
-                else if(phyFormatButton.isSelected())
-                    txtio.savePhy(filepath, outfilepath, mappingRuleMap,false);
-                else if(nexmlFormatButton.isSelected()){
-                	NeXMLIO nexmlio = new NeXMLIO();
-                	nexmlio.saveNeXML(filepath, outfilepath, mappingRuleMap,false);
-                }
-            } catch (Exception ex) {
-             //   Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE, null, ex);
-                ex.printStackTrace();
-                StringWriter sw = new StringWriter();PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
-                LOGGER.error(sw.toString());
-            } 
-        }
-    }//GEN-LAST:event_saveMatrixButtonActionPerformed
+			DefaultTableModel model = (DefaultTableModel) featureMappingTable
+					.getModel();
+			for (int i = 0; i < model.getRowCount(); i++) {
+				String feature = (String) model.getValueAt(i, 0);
+				feature = feature.substring(0, feature.indexOf("(") - 1);
+				if (StringPattern.isENum(feature)) {
+					BigDecimal db = new BigDecimal(feature);
+					feature = db.toPlainString();
+				}
+				Object value = model.getValueAt(i, 1);
+				featureMap.put(feature, value);
+			}
+
+			saveMatrixButton.setEnabled(true);
+			txtFormatButton.setEnabled(true);
+			nexFormatButton.setEnabled(true);
+			phyFormatButton.setEnabled(true);
+			nexmlFormatButton.setEnabled(true);
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
+
+	}// GEN-LAST:event_saveMappingRuleButtonActionPerformed
+
+	private void saveMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveMatrixButtonActionPerformed
+		// TODO add your handling code here:
+		try {
+			int returnVal = fileChooser.showSaveDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				txtMatrixFileIo txtio = new txtMatrixFileIo();
+				File file = fileChooser.getSelectedFile();
+				// What to do with the file, e.g. display it in a TextArea
+				outfilepath = file.getAbsolutePath();
+				try {
+					// txtio.saveAll(filepath, outfilepath, mappingRuleMap);
+
+					if (txtFormatButton.isSelected())
+						txtio.saveTxt(filepath, outfilepath, mappingRuleMap,
+								false);
+					else if (nexFormatButton.isSelected())
+						txtio.saveNex(filepath, outfilepath, mappingRuleMap,
+								binMappingRuleMap, false);
+					else if (phyFormatButton.isSelected())
+						txtio.savePhy(filepath, outfilepath, mappingRuleMap,
+								false);
+					else if (nexmlFormatButton.isSelected()) {
+						NeXMLIO nexmlio = new NeXMLIO();
+						nexmlio.saveNeXML(filepath, outfilepath,
+								mappingRuleMap, false);
+					}
+				} catch (Exception ex) {
+					// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+					// null, ex);
+					ex.printStackTrace();
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					ex.printStackTrace(pw);
+					LOGGER.error(sw.toString());
+				}
+			}
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
+	}// GEN-LAST:event_saveMatrixButtonActionPerformed
 
     private void binRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_binRadioActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_binRadioActionPerformed
 
-    private void binRadioStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_binRadioStateChanged
-        // TODO add your handling code here:
-       if (binRadio.isSelected()) {
-            binRuleTable.setEnabled(true);
-            insertBinRuleButton.setEnabled(true);
-            deleteBinRuleButton.setEnabled(true);
-            applyBinRuleButton.setEnabled(true);
-        }else{
-            binRuleTable.setEnabled(false);
-            insertBinRuleButton.setEnabled(false);
-            deleteBinRuleButton.setEnabled(false);
-            applyBinRuleButton.setEnabled(false);
-        }
-    }//GEN-LAST:event_binRadioStateChanged
+	private void binRadioStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_binRadioStateChanged
+		// TODO add your handling code here:
+		try {
+			if (binRadio.isSelected()) {
+				binRuleTable.setEnabled(true);
+				insertBinRuleButton.setEnabled(true);
+				deleteBinRuleButton.setEnabled(true);
+				applyBinRuleButton.setEnabled(true);
+			} else {
+				binRuleTable.setEnabled(false);
+				insertBinRuleButton.setEnabled(false);
+				deleteBinRuleButton.setEnabled(false);
+				applyBinRuleButton.setEnabled(false);
+			}
+		} catch (Exception ex) {
+			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
+			// null, ex);
+			ex.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			LOGGER.error(sw.toString());
+		}
+	}// GEN-LAST:event_binRadioStateChanged
 
     private void characterComboBoxFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_characterComboBoxFocusGained
  
