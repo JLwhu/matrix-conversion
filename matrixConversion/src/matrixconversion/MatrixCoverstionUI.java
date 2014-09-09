@@ -535,6 +535,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 			for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
 				defaultModel.removeRow(i);
 			}
+			
+			asisValueRadio.setSelected(true);
 
 			if (characterFeatureList.size() > 0) {
 				ArrayList featurelist = (ArrayList) characterFeatureList
@@ -626,11 +628,11 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 						int taxNum = (Integer) featureStatMap.get(feature);
 						newRow.add(feature + " (" + taxNum + ")");
 
-						if (StringPattern.isDouble(feature)) {
+				/*		if (StringPattern.isDouble(feature)) {
 							double value = Double.valueOf(feature);
-							value = Math.round(value * 1000) / 1000;
+							value = Math.round(value * 10000) / 10000;
 							feature = String.valueOf(value);
-						}
+						}*/
 
 						newRow.add(feature);
 						defaultModel.addRow(newRow);
