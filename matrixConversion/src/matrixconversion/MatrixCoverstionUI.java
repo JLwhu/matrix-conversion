@@ -6,20 +6,22 @@ package matrixconversion;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
 import javax.swing.DefaultRowSorter;
 import javax.swing.JFileChooser;
 import javax.swing.RowSorter;
@@ -27,6 +29,7 @@ import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.NumberFormatter;
 
 import org.jdom2.JDOMException;
 
@@ -120,6 +123,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         fileChooser.setFileHidingEnabled(false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Step 1: Choose Matrix File"));
 
@@ -244,6 +249,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
         });
         binRuleTable.setEnabled(false);
         jScrollPane2.setViewportView(binRuleTable);
+
 
         insertBinRuleButton.setText("Insert");
         insertBinRuleButton.setEnabled(false);
@@ -807,7 +813,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 							Double tovalue = rangeMap[1];
 							Double mapvalue = rangeMap[2];
 							if (featurevalue >= fromvalue
-									&& featurevalue <= tovalue) {
+									&& featurevalue < tovalue) {
 								newRow.add(String.valueOf(mapvalue.intValue()));
 								newRow.add(feature + " (" + taxNum + ")");
 								break;
