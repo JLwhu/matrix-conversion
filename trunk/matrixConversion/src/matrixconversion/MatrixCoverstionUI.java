@@ -623,7 +623,9 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 						// newRow.add(feature);
 						int taxNum = (Integer) featureStatMap.get(feature);
 						newRow.add(feature + " (" + taxNum + ")");
-						newRow.add(featureMap.get(feature));
+						Object value = featureMap.get(feature);
+						if (!value.equals("") && value!=null)
+							newRow.add(value);
 						defaultModel.addRow(newRow);
 					}
 				} else {
@@ -680,8 +682,10 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 						// newRow.add(feature);
 						int taxNum = (Integer) featureStatMap.get(feature);
 						newRow.add(feature + " (" + taxNum + ")");
-
-						newRow.add(featureMap.get(feature));
+						Object value = featureMap.get(feature);
+						if (!value.equals("") && value!=null)
+							newRow.add(value);
+				//		newRow.add(featureMap.get(feature));
 						defaultModel.addRow(newRow);
 					}
 				} else {
@@ -866,7 +870,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 					feature = db.toPlainString();
 				}
 				Object value = model.getValueAt(i, 1);
-				featureMap.put(feature, value);
+				if (!value.equals("") && value!=null)
+					featureMap.put(feature, value);
 			}
 
 			saveMatrixButton.setEnabled(true);
