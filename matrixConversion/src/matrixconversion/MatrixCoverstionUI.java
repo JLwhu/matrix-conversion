@@ -824,7 +824,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 							}
 						}
 					} else {
-						newRow.add(0);
+						newRow.add("");
 					}
 
 					defaultModel.addRow(newRow);

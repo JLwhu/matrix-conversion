@@ -279,8 +279,12 @@ public class txtMatrixFileIo {
 							for (int l = 0; l < curValues.size(); l++) {
 								value += curValues.get(l) + ",";
 							}
-							value = value.substring(0, value.length() - 1);
-							bw.write(value + "\t");
+							if ((!value.equals("null")) && (!value.isEmpty())) {
+								value = value.substring(0, value.length() - 1);
+								bw.write(value + "\t");
+							} else {
+								bw.write("\t");
+							}
 						} else {
 							bw.write("" + "\t");
 						}
