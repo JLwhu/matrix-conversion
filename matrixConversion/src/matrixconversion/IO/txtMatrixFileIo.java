@@ -249,8 +249,10 @@ public class txtMatrixFileIo {
 									// if (value.length() == 0) {
 									value = String.valueOf(featureMap
 											.get(curItem));
-									if (!curValues.contains(value))
-										curValues.add(value);
+									if ((!value.equals("null"))
+											&& (!value.isEmpty()))
+										if (!curValues.contains(value))
+											curValues.add(value);
 									/*
 									 * } else { value = value + "," +
 									 * String.valueOf(featureMap.get(curItem));
@@ -262,12 +264,16 @@ public class txtMatrixFileIo {
 								// String.valueOf(featureMap.get(itemleft));
 								value = String
 										.valueOf(featureMap.get(itemleft));
-								if (!curValues.contains(value))
-									curValues.add(value);
+								if ((!value.equals("null"))
+										&& (!value.isEmpty()))
+									if (!curValues.contains(value))
+										curValues.add(value);
 							} else {
 								value = String.valueOf(featureMap.get(item));
-								if (!curValues.contains(value))
-									curValues.add(value);
+								if ((!value.equals("null"))
+										&& (!value.isEmpty()))
+									if (!curValues.contains(value))
+										curValues.add(value);
 							}
 							value = "";
 							for (int l = 0; l < curValues.size(); l++) {
@@ -447,13 +453,16 @@ public class txtMatrixFileIo {
 									end = itemleft.indexOf("|");
 									String curItem = itemleft.substring(0, end);
 									// if (value.length() == 0) {
-									value = (String) String.valueOf(featureMap
+									value = String.valueOf(featureMap
 											.get(curItem));
-									if (!values.contains(value)) {
-										values.add(value);
+									if ((!value.equals("null"))
+											&& (!value.isEmpty())) {									
+										if (!values.contains(value)) {
+											values.add(value);
+										}
+										if (!curValues.contains(value))
+											curValues.add(value);
 									}
-									if (!curValues.contains(value))
-										curValues.add(value);
 									/*
 									 * } else { if
 									 * (!values.contains(String.valueOf
@@ -469,23 +478,29 @@ public class txtMatrixFileIo {
 								}
 								value = String
 										.valueOf(featureMap.get(itemleft));
-								if (!values.contains(value)) {
-									values.add(value);
+								if ((!value.equals("null"))
+										&& (!value.isEmpty())) {
+									if (!values.contains(value)) {
+										values.add(value);
+									}
+									if (!curValues.contains(value))
+										curValues.add(value);
 								}
-								if (!curValues.contains(value))
-									curValues.add(value);
 								// value = "{" + value + (String)
 								// String.valueOf(featureMap.get(itemleft)) +
 								// "}";
 
 							} else {
-								value = (String) String.valueOf(featureMap
+								value = String.valueOf(featureMap
 										.get(item));
-								if (!values.contains(value)) {
-									values.add(value);
+								if ((!value.equals("null"))
+										&& (!value.isEmpty())) {
+									if (!values.contains(value)) {
+										values.add(value);
+									}
+									if (!curValues.contains(value))
+										curValues.add(value);
 								}
-								if (!curValues.contains(value))
-									curValues.add(value);
 							}
 							value = "";
 							for (int l = 0; l < curValues.size(); l++) {
