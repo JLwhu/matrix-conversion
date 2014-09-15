@@ -49,6 +49,7 @@ import matrixconversion.util.StringPattern;
             return "Text documents (*.txt)";
         }
     } 
+
 /**
  *
  * @author jingliu5
@@ -90,6 +91,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
+        savefileChooser = new javax.swing.JFileChooser();
         mappingChoiceButtonGroup = new javax.swing.ButtonGroup();
         outputFormatChoiceButtonGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
@@ -894,10 +896,10 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 	private void saveMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveMatrixButtonActionPerformed
 		// TODO add your handling code here:
 		try {
-			int returnVal = fileChooser.showSaveDialog(this);
+			int returnVal = savefileChooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				txtMatrixFileIo txtio = new txtMatrixFileIo();
-				File file = fileChooser.getSelectedFile();
+				File file = savefileChooser.getSelectedFile();
 				// What to do with the file, e.g. display it in a TextArea
 				outfilepath = file.getAbsolutePath();
 				try {
@@ -1022,6 +1024,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     private javax.swing.JButton deleteBinRuleButton;
     private javax.swing.JTable featureMappingTable;
     private javax.swing.JFileChooser fileChooser;
+    private javax.swing.JFileChooser savefileChooser;
     private javax.swing.JTextField filepathText;
     private javax.swing.JButton insertBinRuleButton;
     private javax.swing.JButton jButton1;
