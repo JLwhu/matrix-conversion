@@ -542,7 +542,7 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 filepath = file.getAbsolutePath();
                 filepathText.setText(filepath);
 
-                characterComboBox.removeAll();
+                characterComboBox.removeAllItems();
                 characterFeatureList = new ArrayList();
                 columnStatistics = null;
                 mappingRuleMap = new HashMap();
@@ -603,66 +603,73 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 
     private void characterComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_characterComboBoxItemStateChanged
 		try {
-			int index = characterComboBox.getSelectedIndex();
-			String character = (String) characterComboBox.getSelectedItem();
-			SortedMap featureMap = (SortedMap) mappingRuleMap.get(character);
-			DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable
-					.getModel();
+			if (characterComboBox.getItemCount() > 0) {
+				int index = characterComboBox.getSelectedIndex();
+				String character = (String) characterComboBox.getSelectedItem();
+				SortedMap featureMap = (SortedMap) mappingRuleMap
+						.get(character);
+				DefaultTableModel defaultModel = (DefaultTableModel) featureMappingTable
+						.getModel();
 
-			for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
-				defaultModel.removeRow(i);
-			}
-			
-			asisValueRadio.setSelected(true);
-
-			if (characterFeatureList.size() > 0) {
-				ArrayList featurelist = (ArrayList) characterFeatureList
-						.get(index);
-				HashMap featureStatMap = (HashMap) columnStatistics.get(index);
-				if (featureMap != null) {
-					for (int i = 0; i < featurelist.size(); i++) {
-						Vector newRow = new Vector();
-						String feature = (String) featurelist.get(i);
-						int taxNum = (Integer) featureStatMap.get(feature);
-						newRow.add(feature + "(" + taxNum + ")");
-						newRow.add(featureMap.get(feature));
-						defaultModel.addRow(newRow);
-					}
-				} else {
-					if (asisValueRadio.isSelected()) {
-						for (int i = 0; i < featurelist.size(); i++) {
-							Vector newRow = new Vector();
-							String feature = (String) featurelist.get(i);
-							int taxNum = (Integer) featureStatMap.get(feature);
-							newRow.add(feature + " (" + taxNum + ")");
-
-							if (StringPattern.isDouble(feature)) {
-								double value = Double.valueOf(feature);
-								value = Math.round(value * 1000.0) / 1000.0;
-								feature = String.valueOf(value);
-							}
-							newRow.add(feature);
-							defaultModel.addRow(newRow);
-						}
-					}
-					if (numberRadio.isSelected() || binRadio.isSelected()) {
-						for (int i = 0; i < featurelist.size(); i++) {
-							Vector newRow = new Vector();
-							String feature = (String) featurelist.get(i);
-							int taxNum = (Integer) featureStatMap.get(feature);
-							newRow.add(feature + " (" + taxNum + ")");
-
-							newRow.add(String.valueOf(i));
-							defaultModel.addRow(newRow);
-						}
-					}
+				for (int i = defaultModel.getRowCount() - 1; i >= 0; i--) {
+					defaultModel.removeRow(i);
 				}
 
+				asisValueRadio.setSelected(true);
+
+				if (characterFeatureList.size() > 0) {
+					ArrayList featurelist = (ArrayList) characterFeatureList
+							.get(index);
+					HashMap featureStatMap = (HashMap) columnStatistics
+							.get(index);
+					if (featureMap != null) {
+						for (int i = 0; i < featurelist.size(); i++) {
+							Vector newRow = new Vector();
+							String feature = (String) featurelist.get(i);
+							int taxNum = (Integer) featureStatMap.get(feature);
+							newRow.add(feature + "(" + taxNum + ")");
+							newRow.add(featureMap.get(feature));
+							defaultModel.addRow(newRow);
+						}
+					} else {
+						if (asisValueRadio.isSelected()) {
+							for (int i = 0; i < featurelist.size(); i++) {
+								Vector newRow = new Vector();
+								String feature = (String) featurelist.get(i);
+								int taxNum = (Integer) featureStatMap
+										.get(feature);
+								newRow.add(feature + " (" + taxNum + ")");
+
+								if (StringPattern.isDouble(feature)) {
+									double value = Double.valueOf(feature);
+									value = Math.round(value * 1000.0) / 1000.0;
+									feature = String.valueOf(value);
+								}
+								newRow.add(feature);
+								defaultModel.addRow(newRow);
+							}
+						}
+						if (numberRadio.isSelected() || binRadio.isSelected()) {
+							for (int i = 0; i < featurelist.size(); i++) {
+								Vector newRow = new Vector();
+								String feature = (String) featurelist.get(i);
+								int taxNum = (Integer) featureStatMap
+										.get(feature);
+								newRow.add(feature + " (" + taxNum + ")");
+
+								newRow.add(String.valueOf(i));
+								defaultModel.addRow(newRow);
+							}
+						}
+					}
+
+				}
+
+				fSorter = new TableRowSorter<TableModel>(defaultModel);
+				featureMappingTable.setRowSorter(fSorter);
+				featureMappingTable.getTableHeader().addMouseListener(
+						new CustomSorter());
 			}
-			
-			fSorter = new TableRowSorter<TableModel>(defaultModel);
-			featureMappingTable.setRowSorter(fSorter);
-			featureMappingTable.getTableHeader().addMouseListener(new CustomSorter());
 		} catch (Exception ex) {
 			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
 			// null, ex);
