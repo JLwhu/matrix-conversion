@@ -49,6 +49,48 @@ import matrixconversion.util.StringPattern;
             return "Text documents (*.txt)";
         }
     } 
+ 
+ class MyCustomFilterNex extends javax.swing.filechooser.FileFilter {
+     @Override
+     public boolean accept(File file) {
+         // Allow only directories, or files with ".txt" extension
+         return file.isDirectory() || file.getAbsolutePath().endsWith(".nex");
+     }
+     @Override
+     public String getDescription() {
+         // This description will be displayed in the dialog,
+         // hard-coded = ugly, should be done via I18N
+         return "Nexus files (*.nex)";
+     }
+ } 
+ 
+ class MyCustomFilterPhy extends javax.swing.filechooser.FileFilter {
+     @Override
+     public boolean accept(File file) {
+         // Allow only directories, or files with ".txt" extension
+         return file.isDirectory() || file.getAbsolutePath().endsWith(".nex");
+     }
+     @Override
+     public String getDescription() {
+         // This description will be displayed in the dialog,
+         // hard-coded = ugly, should be done via I18N
+         return "phy files (*.phy)";
+     }
+ } 
+ 
+ class MyCustomFilterXml extends javax.swing.filechooser.FileFilter {
+     @Override
+     public boolean accept(File file) {
+         // Allow only directories, or files with ".txt" extension
+         return file.isDirectory() || file.getAbsolutePath().endsWith(".nex");
+     }
+     @Override
+     public String getDescription() {
+         // This description will be displayed in the dialog,
+         // hard-coded = ugly, should be done via I18N
+         return "xml files (*.xml)";
+     }
+ } 
 
 /**
  *
@@ -91,7 +133,6 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
-        savefileChooser = new javax.swing.JFileChooser();
         mappingChoiceButtonGroup = new javax.swing.ButtonGroup();
         outputFormatChoiceButtonGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
@@ -123,7 +164,23 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 
         fileChooser.setFileFilter( new MyCustomFilter());
         fileChooser.setFileHidingEnabled(false);
+        
+        savefileChooser = new javax.swing.JFileChooser();
+		savefileChooser.setFileFilter(new MyCustomFilter());
+		savefileChooser.setFileHidingEnabled(false);
 
+		savenexfileChooser = new javax.swing.JFileChooser();
+		savenexfileChooser.setFileFilter(new MyCustomFilterNex());
+		savenexfileChooser.setFileHidingEnabled(false);
+		
+		savephyfileChooser = new javax.swing.JFileChooser();
+		savephyfileChooser.setFileFilter(new MyCustomFilterPhy());
+		savephyfileChooser.setFileHidingEnabled(false);
+
+		savexmlfileChooser = new javax.swing.JFileChooser();
+		savexmlfileChooser.setFileFilter(new MyCustomFilterXml());
+		savexmlfileChooser.setFileHidingEnabled(false);
+	    	    
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
 
@@ -896,38 +953,49 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 	private void saveMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveMatrixButtonActionPerformed
 		// TODO add your handling code here:
 		try {
-			int returnVal = savefileChooser.showSaveDialog(this);
+			
+			JFileChooser fchooser = savefileChooser;;
+			
+			if (txtFormatButton.isSelected()) {
+				fchooser = savefileChooser;
+			} else if (nexFormatButton.isSelected()) {
+				fchooser = savenexfileChooser;
+			} else if (phyFormatButton.isSelected()) {
+				fchooser = savephyfileChooser;
+			} else if (nexmlFormatButton.isSelected()) {
+				fchooser = savexmlfileChooser;
+			}
+
+			int returnVal = fchooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				txtMatrixFileIo txtio = new txtMatrixFileIo();
-				File file = savefileChooser.getSelectedFile();
+				File file = fchooser.getSelectedFile();
+
 				// What to do with the file, e.g. display it in a TextArea
 				outfilepath = file.getAbsolutePath();
-				try {
-					// txtio.saveAll(filepath, outfilepath, mappingRuleMap);
 
-					if (txtFormatButton.isSelected())
-						txtio.saveTxt(filepath, outfilepath, mappingRuleMap,
-								false);
-					else if (nexFormatButton.isSelected())
-						txtio.saveNex(filepath, outfilepath, mappingRuleMap,
-								binMappingRuleMap, false);
-					else if (phyFormatButton.isSelected())
-						txtio.savePhy(filepath, outfilepath, mappingRuleMap,
-								false);
-					else if (nexmlFormatButton.isSelected()) {
-						NeXMLIO nexmlio = new NeXMLIO();
-						nexmlio.saveNeXML(filepath, outfilepath,
-								mappingRuleMap, false);
-					}
-				} catch (Exception ex) {
-					// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
-					// null, ex);
-					ex.printStackTrace();
-					StringWriter sw = new StringWriter();
-					PrintWriter pw = new PrintWriter(sw);
-					ex.printStackTrace(pw);
-					LOGGER.error(sw.toString());
+				// txtio.saveAll(filepath, outfilepath, mappingRuleMap);
+				if (txtFormatButton.isSelected()){
+					if (outfilepath.indexOf(".txt") < 0)
+						outfilepath += ".txt";
+					txtio.saveTxt(filepath, outfilepath, mappingRuleMap, false);
+				} else if (nexFormatButton.isSelected()){
+					if (outfilepath.indexOf(".nex") < 0)
+						outfilepath += ".nex";
+					txtio.saveNex(filepath, outfilepath, mappingRuleMap,
+							binMappingRuleMap, false);
+				}else if (phyFormatButton.isSelected()){
+					if (outfilepath.indexOf(".phy") < 0)
+						outfilepath += ".phy";
+					txtio.savePhy(filepath, outfilepath, mappingRuleMap, false);
+				}else if (nexmlFormatButton.isSelected()) {
+					if (outfilepath.indexOf(".xml") < 0)
+						outfilepath += ".xml";
+					NeXMLIO nexmlio = new NeXMLIO();
+					nexmlio.saveNeXML(filepath, outfilepath, mappingRuleMap,
+							false);
 				}
+
 			}
 		} catch (Exception ex) {
 			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
@@ -1025,6 +1093,9 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     private javax.swing.JTable featureMappingTable;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JFileChooser savefileChooser;
+    private javax.swing.JFileChooser savenexfileChooser;
+    private javax.swing.JFileChooser savephyfileChooser;
+    private javax.swing.JFileChooser savexmlfileChooser;
     private javax.swing.JTextField filepathText;
     private javax.swing.JButton insertBinRuleButton;
     private javax.swing.JButton jButton1;
