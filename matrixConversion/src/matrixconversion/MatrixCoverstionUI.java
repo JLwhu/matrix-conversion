@@ -542,6 +542,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 filepath = file.getAbsolutePath();
                 filepathText.setText(filepath);
 
+                characterComboBox.removeAll();
+                
                 //           csvFileIO csvio = new csvFileIO();
                 txtMatrixFileIo txtio = new txtMatrixFileIo();
                 //      headers = (ArrayList) csvio.readHeader(filepath);
