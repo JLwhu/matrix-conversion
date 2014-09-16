@@ -4,6 +4,8 @@
  */
 package matrixconversion;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
@@ -25,6 +28,7 @@ import java.util.regex.Pattern;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JFileChooser;
 import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -106,6 +110,8 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
     String filepath;
     String outfilepath;
 
+    TableRowSorter<TableModel> fSorter;
+    List<RowSorter.SortKey> sortKeys; 
     /**
      * Creates new form MatrixCoverstionUI
      */
@@ -647,6 +653,10 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 				}
 
 			}
+			
+			fSorter = new TableRowSorter<TableModel>(defaultModel);
+			featureMappingTable.setRowSorter(fSorter);
+			featureMappingTable.getTableHeader().addMouseListener(new CustomSorter());
 		} catch (Exception ex) {
 			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
 			// null, ex);
@@ -889,9 +899,12 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 					defaultModel.addRow(newRow);
 				}
 			}
-			TableRowSorter<TableModel> sorter1 = new TableRowSorter<TableModel>(
+	/*		TableRowSorter<TableModel> sorter1 = new TableRowSorter<TableModel>(
 					defaultModel);
-			featureMappingTable.setRowSorter(sorter1);
+			featureMappingTable.setRowSorter(sorter1);*/
+
+			
+
 		} catch (Exception ex) {
 			// Logger.getLogger(MatrixCoverstionUI.class.getName()).log(Level.SEVERE,
 			// null, ex);
@@ -903,6 +916,41 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
 		}
 
 	}// GEN-LAST:event_applyBinRuleButtonActionPerformed
+	
+	 private final class CustomSorter extends MouseAdapter {
+		    @Override public void mouseClicked(MouseEvent aEvent) {
+		      int columnIdx = featureMappingTable.getColumnModel().getColumnIndexAtX(aEvent.getX());
+		      //build a list of sort keys for this column, and pass it to the sorter
+		      //you can build the list to fit your needs here 
+		      //for example, you can sort on multiple columns, not just one
+		     // sortKeys;// = new ArrayList<RowSorter.SortKey>();
+		      if (sortKeys==null)
+		    	  sortKeys = new ArrayList<RowSorter.SortKey>();
+		      //cycle through all orders; sort is removed every 3rd click
+		      SortOrder order =  SortOrder.values()[fCountClicks % 3];
+		      Iterator it = sortKeys.iterator();
+		      boolean alreadySortCol = false;
+		      int remIdx = -1;
+		      int i=0;
+		      while(it.hasNext()){
+		    	  SortKey rs = (SortKey) it.next();
+		    	  if (rs.getColumn()==columnIdx){
+		    		  remIdx = i;
+		    		  alreadySortCol = true;
+		    		  break;
+		    	  }
+		    	  i++;
+		      }
+		      if (alreadySortCol)
+		    	  sortKeys.remove(remIdx);
+		    	  
+		      sortKeys.add(new RowSorter.SortKey(columnIdx, order));
+		//      fSorter.setSortKeys(sortKeys);
+		      fSorter.sort();
+		      ++fCountClicks;
+		    }
+		    private int fCountClicks;
+		  }
 
 	private void saveMappingRuleButtonActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveMappingRuleButtonActionPerformed
