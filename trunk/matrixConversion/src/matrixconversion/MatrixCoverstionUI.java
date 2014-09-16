@@ -543,6 +543,10 @@ public class MatrixCoverstionUI extends javax.swing.JFrame {
                 filepathText.setText(filepath);
 
                 characterComboBox.removeAll();
+                characterFeatureList = new ArrayList();
+                columnStatistics = null;
+                mappingRuleMap = new HashMap();
+                binMappingRuleMap = new HashMap();  
                 
                 //           csvFileIO csvio = new csvFileIO();
                 txtMatrixFileIo txtio = new txtMatrixFileIo();
