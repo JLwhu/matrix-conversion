@@ -213,7 +213,8 @@ public class txtMatrixFileIo {
 			bw.flush();
 			idx = idxEnd + 1;
 		}
-		bw.newLine();// 换行
+		bw.write("\r\n");
+	//	bw.newLine();// 换行
 		bw.flush();
 		System.out.println(sCurrentLine);
 
@@ -295,7 +296,8 @@ public class txtMatrixFileIo {
 				i++;
 				idx = idxEnd + 1;
 			}
-			bw.newLine();// 换行
+			bw.write("\r\n");
+			//	bw.newLine();// 换行
 			bw.flush();
 			// System.out.println(sCurrentLine);
 		}
@@ -321,10 +323,11 @@ public class txtMatrixFileIo {
 		bw.write("TAXLABELS\r\n");
 		for (int i = 0; i < firstColumn.size(); i++) {
 			bw.write("       "+firstColumn.get(i));
-			bw.newLine();// 换行
+			bw.write("\r\n");
+			//	bw.newLine();// 换行
 			bw.flush();
 		}
-		bw.write("END;\r\n\r\n");
+		bw.write(";\r\nEND;\r\n\r\n");
 		
 		bw.write("BEGIN CHARACTERS;\r\n");		
 		bw.write("     DIMENSIONS NCHAR="
@@ -343,14 +346,18 @@ public class txtMatrixFileIo {
 		}
 
 		bw.write("\" MISSING=? GAP= -;");
-		bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
 		
 		saveCharacterPart(bw, mappingRuleMap,binMappingRuleMap, headers, saveAll);
-		bw.newLine();
-		bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
 		
 		bw.write("MATRIX");
-		bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
 		bw.flush();
 		for (int i = 0; i < firstColumn.size(); i++) {
 			bw.write(firstColumn.get(i) + "\t");
@@ -404,7 +411,8 @@ public class txtMatrixFileIo {
 		for (int i = 0; i < firstColumn.size(); i++) {
 			bw.write(firstColumn.get(i) + "\t");
 			bw.write(contents.get(i));
-			bw.newLine();// 换行
+			bw.write("\r\n");
+			//	bw.newLine();// 换行
 			bw.flush();
 		}
 		bw.close();
@@ -561,7 +569,8 @@ public class txtMatrixFileIo {
 		BufferedWriter bw;
 		bw = new BufferedWriter(new FileWriter(outCharacterFile));
 		bw.write("CHARSTATELABELS");
-		bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
 		bw.flush();
 		int columnNum = 0;
 		for (int i = 1; i < headers.size(); i++) {
@@ -584,7 +593,8 @@ public class txtMatrixFileIo {
 						// bw.write(",");
 					}
 				}
-				bw.newLine();
+				bw.write("\r\n");
+				//	bw.newLine();
 				bw.flush();
 			} else if (!saveAll
 					&& (!(featureMap == null || featureMap.isEmpty()))) {
@@ -603,7 +613,8 @@ public class txtMatrixFileIo {
 					bw.write("\' ");
 					// bw.write(",");
 				}
-				bw.newLine();
+				bw.write("\r\n");
+				//	bw.newLine();
 				bw.flush();
 			}
 		}
