@@ -354,14 +354,16 @@ public class txtMatrixFileIo {
 		bw.flush();
 		for (int i = 0; i < firstColumn.size(); i++) {
 			bw.write(firstColumn.get(i) + "\t");
-			bw.write(contents.get(i));
-			bw.newLine();// 换行
+			bw.write(contents.get(i)+ "\r\n");
+		//	bw.newLine();// 换行
 			bw.flush();
 		}
 		bw.write(";");
-		bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
 		bw.write("END;");
-		bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
 
 	/*	bw.newLine();
 		bw.newLine();
@@ -611,7 +613,8 @@ public class txtMatrixFileIo {
 
 	private void saveCharacterPart(BufferedWriter bw, HashMap mappingRuleMap,HashMap binMappingRuleMap, ArrayList<String> headers, boolean saveAll) throws IOException {
         bw.write("CHARSTATELABELS");
-        bw.newLine();
+		bw.write("\r\n");
+	//	bw.newLine();
         bw.flush();
         int columnNum = 0;
         for (int i = 1; i < headers.size(); i++) {
@@ -663,7 +666,8 @@ public class txtMatrixFileIo {
                     }
                 }
                 bw.write(",");
-                bw.newLine();
+        		bw.write("\r\n");
+        		//	bw.newLine();
                 bw.flush();
             } else if (!saveAll && (!(featureMap == null || featureMap.isEmpty()))) {
                 columnNum++;
@@ -696,7 +700,8 @@ public class txtMatrixFileIo {
 					bw.write(" ");
 				}
                 bw.write(",");
-                bw.newLine();
+        		bw.write("\r\n");
+        		//	bw.newLine();
                 bw.flush();
             }
         }
