@@ -316,12 +316,25 @@ public class txtMatrixFileIo {
 
 		bw = new BufferedWriter(new FileWriter(outfilename));
 
-		bw.write("#NEXUS" + "\r\n\r\n");
-		bw.write("BEGIN DATA;" + "\r\n\t");
+		bw.write("#NEXUS" + "\r\n");
+		bw.write("BEGIN TAXA;	DIMENSIONS  NTAX="+ firstColumn.size() + ";\r\n");
+		bw.write("TAXLABELS\r\n");
+		for (int i = 0; i < firstColumn.size(); i++) {
+			bw.write("       "+firstColumn.get(i));
+			bw.newLine();// 换行
+			bw.flush();
+		}
+		bw.write("END;\r\n\r\n");
+		
+		bw.write("BEGIN CHARACTERS;\r\n");		
+		bw.write("     DIMENSIONS NCHAR="
+				+ String.valueOf(columnNum) + ";");
+		
+/*		bw.write("BEGIN DATA;" + "\r\n\t");
 		bw.write("DIMENSIONS NTAX=" + firstColumn.size() + " NCHAR="
 				+ String.valueOf(columnNum) + ";");
-		bw.newLine();// 换行
-		bw.write(" FORMAT DATATYPE=Standard SYMBOLS= \"");
+		bw.newLine();// 换行*/
+		bw.write("     FORMAT DATATYPE=Standard SYMBOLS= \"");
 		for (int i = 0; i < values.size(); i++) {
 			bw.write(values.get(i));
 			if (i != values.size() - 1) {
@@ -331,6 +344,11 @@ public class txtMatrixFileIo {
 
 		bw.write("\" MISSING=? GAP= -;");
 		bw.newLine();
+		
+		saveCharacterPart(bw, mappingRuleMap,binMappingRuleMap, headers, saveAll);
+		bw.newLine();
+		bw.newLine();
+		
 		bw.write("MATRIX");
 		bw.newLine();
 		bw.flush();
@@ -345,13 +363,13 @@ public class txtMatrixFileIo {
 		bw.write("END;");
 		bw.newLine();
 
-		bw.newLine();
+	/*	bw.newLine();
 		bw.newLine();
 		bw.write("[");
 		bw.newLine();
 		saveCharacterPart(bw, mappingRuleMap,binMappingRuleMap, headers, saveAll);
 		bw.newLine();
-		bw.write("]");
+		bw.write("]");*/
 
 		bw.flush();
 		bw.close();
@@ -617,10 +635,10 @@ public class txtMatrixFileIo {
             
             if (saveAll && (featureMap == null || featureMap.isEmpty())) {
                 bw.write("\t\t");
-                bw.write(String.valueOf(i));
-                bw.write(" \'");
+                bw.write(String.valueOf(i)+" ");
+          //      bw.write(" \'");
                 bw.write(headers.get(i));
-                bw.write(" \'");
+          //      bw.write(" \'");
                 bw.write(" / ");
                 if (!(featureMap == null || featureMap.isEmpty())) {
                     Iterator it;
@@ -633,25 +651,27 @@ public class txtMatrixFileIo {
 //                    Iterator it = featureMap.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pairs = (Map.Entry) it.next();
-                        bw.write(" \'");
+               //         bw.write(" \'");
         				//	bw.write((String) pairs.getKey());
     					bw.write((String) pairs.getValue());
-                        bw.write("\' ");
+               //         bw.write("\' ");
          /*               bw.write(" : \'");
                         bw.write((String) pairs.getValue());
                         bw.write("\' ");*/
-                        bw.write(",");  
+          //              bw.write(",");  
+    					bw.write(" "); 
                     }
                 }
+                bw.write(",");
                 bw.newLine();
                 bw.flush();
             } else if (!saveAll && (!(featureMap == null || featureMap.isEmpty()))) {
                 columnNum++;
                 bw.write("\t\t");
-                bw.write(String.valueOf(columnNum));
-                bw.write(" \'");
+                bw.write(String.valueOf(columnNum)+" ");
+          //      bw.write(" \'");
                 bw.write(headers.get(i));
-                bw.write(" \'");
+         //       bw.write(" \'");
                 bw.write(" / ");
                 
                 Iterator it;
@@ -664,20 +684,23 @@ public class txtMatrixFileIo {
 				
 				while (it.hasNext()) {
 					Map.Entry pairs = (Map.Entry) it.next();
-					bw.write(" \'");
+				//	bw.write(" \'");
 				//	bw.write((String) pairs.getKey());
 					bw.write((String) pairs.getValue());
-					bw.write("\' ");
+				//	bw.write("\' ");
 					/*
 					 * bw.write(" : \'"); bw.write((String)
 					 * pairs.getValue()); bw.write("\' ");
 					 */
-					bw.write(",");
+			//		bw.write(",");
+					bw.write(" ");
 				}
+                bw.write(",");
                 bw.newLine();
                 bw.flush();
             }
         }
+        bw.write(";");
         bw.flush();
     }
 
